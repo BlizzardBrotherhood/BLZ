@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Blizzard Brotherhood</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png+xml" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108668727', 'ym');
+
+    ym(108668727, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/108668727" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/images/logo.png" alt="" class="logo-img" width="28" height="28">
+          <span>Blizzard Brotherhood</span>
+        </a>
+      </div>
+      <hr class="decor-line">
+    </header>
+
+    <div id="auth-screen" class="auth-screen">
+      <h2>Admin</h2>
+      <p class="text-secondary">Enter password to continue</p>
+      <form id="auth-form">
+        <div class="form-group">
+          <label for="admin-password">Password</label>
+          <input type="password" id="admin-password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Enter</button>
+      </form>
+    </div>
+
+    <div id="admin-panel" class="admin-wrap admin-hidden">
+      <h1>Admin panel</h1>
+
+      <section class="admin-section">
+        <h2>Add new title</h2>
+        <form id="form-new-title">
+          <div class="form-group">
+            <label for="nt-title">Title (RU)</label>
+            <input type="text" id="nt-title" required>
+          </div>
+          <div class="form-group">
+            <label for="nt-title-en">Title (EN)</label>
+            <input type="text" id="nt-title-en">
+          </div>
+          <div class="form-group">
+            <label for="nt-author">Author</label>
+            <input type="text" id="nt-author">
+          </div>
+          <div class="form-group">
+            <label for="nt-description">Description</label>
+            <textarea id="nt-description" rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="nt-genres">Genres (comma-separated)</label>
+            <input type="text" id="nt-genres" placeholder="Fantasy, Adventure">
+          </div>
+          <div class="form-group">
+            <label for="nt-status">Status</label>
+            <select id="nt-status">
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="hiatus">On Hiatus</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="nt-cover">Cover image URL (or path)</label>
+            <input type="text" id="nt-cover" placeholder="assets/images/covers/slug.jpg">
+            <p class="upload-hint">Upload image to repo and enter path. For new title use a slug (e.g. my-novel) for id.</p>
+          </div>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary">Add title</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-section">
+        <h2>Add new chapter</h2>
+        <form id="form-new-chapter">
+          <div class="form-group">
+            <label for="nc-title-id">Title</label>
+            <select id="nc-title-id" required></select>
+          </div>
+          <div class="form-group">
+            <label for="nc-number">Chapter number</label>
+            <input type="number" id="nc-number" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="nc-chapter-title">Chapter title</label>
+            <input type="text" id="nc-chapter-title" required>
+          </div>
+          <div class="form-group">
+            <label>Language</label>
+            <select id="nc-language">
+              <option value="ru">Russian (translation)</option>
+              <option value="en">English (original)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="nc-content">Content</label>
+            <textarea id="nc-content" rows="14" required placeholder="Paste chapter text here..."></textarea>
+          </div>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary">Publish</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-section" id="delete-section">
+        <h2>Delete chapters</h2>
+        <p class="text-muted">Loading chapters list...</p>
+      </section>
+
+      <div id="admin-message" class="admin-message"></div>
+    </div>
+  </div>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

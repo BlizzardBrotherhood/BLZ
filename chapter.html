@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blizzard Brotherhood — Глава</title>
+  <meta name="description" content="Chapter reading">
+  <meta property="og:title" content="Blizzard Brotherhood">
+  <meta property="og:description" content="Light novel and web novel translations">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png+xml" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Lora:ital,wght@0,400;0,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108668727', 'ym');
+
+    ym(108668727, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/108668727" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</head>
+<body>
+  <div class="read-progress-bar" aria-hidden="true">
+    <div class="read-progress-fill" id="read-progress-fill"></div>
+  </div>
+
+  <div class="page-wrap">
+    <header class="reader-header">
+      <div class="reader-header-left">
+        <a href="#" id="back-link" class="btn">← Back</a>
+        <h1 class="reader-title" id="reader-title">Загрузка…</h1>
+      </div>
+      <button type="button" class="reader-settings-btn" id="reader-settings-btn" aria-label="Reading settings">⚙️</button>
+    </header>
+
+    <div class="reader-content-wrap">
+      <article class="reader-content" id="reader-content">
+        <p class="text-muted">Загрузка главы…</p>
+      </article>
+    </div>
+
+    <nav class="reader-nav" id="reader-nav" aria-label="Chapter navigation">
+      <a href="#" class="btn" id="prev-chapter">← Previous Chapter</a>
+      <a href="#" class="btn" id="chapter-list">Chapter List</a>
+      <a href="#" class="btn" id="next-chapter">Next Chapter →</a>
+    </nav>
+  </div>
+
+  <div class="settings-overlay" id="settings-overlay" aria-hidden="true">
+    <div class="settings-panel" role="dialog" aria-label="Reading settings">
+      <h3>Reading settings</h3>
+      <div class="settings-group">
+        <label>Font size</label>
+        <div class="settings-row">
+          <button type="button" data-size="small">A−</button>
+          <button type="button" data-size="normal" class="active">A</button>
+          <button type="button" data-size="large">A+</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <label>Line spacing</label>
+        <div class="settings-row">
+          <button type="button" data-spacing="compact">Compact</button>
+          <button type="button" data-spacing="normal" class="active">Normal</button>
+          <button type="button" data-spacing="wide">Wide</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <label>Theme</label>
+        <div class="settings-row">
+          <button type="button" data-theme="dark" class="active">Dark</button>
+          <button type="button" data-theme="light">Light</button>
+          <button type="button" data-theme="sepia">Sepia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/reader.js"></script>
+  <script>
+    (function() {
+      var params = new URLSearchParams(location.search);
+      var titleSlug = params.get('title');
+      var chapterNum = params.get('chapter');
+      if (!titleSlug || !chapterNum) {
+        document.getElementById('reader-content').innerHTML = '<p class="text-muted">Укажите title и chapter в адресе.</p>';
+        document.getElementById('reader-nav').style.display = 'none';
+        return;
+      }
+      Reader.init({ titleSlug: titleSlug, chapterNum: chapterNum });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blizzard Brotherhood — Название</title>
+  <meta name="description" content="Chapters and translation progress">
+  <meta property="og:title" content="Blizzard Brotherhood">
+  <meta property="og:description" content="Light novel and web novel translations">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png+xml" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Lora:ital,wght@0,400;0,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108668727', 'ym');
+
+    ym(108668727, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/108668727" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/images/logo.png" alt="" class="logo-img" width="28" height="28">
+          <span>Blizzard Brotherhood</span>
+        </a>
+        <div class="header-actions">
+          <a href="#" id="telegram-link" target="_blank" rel="noopener" aria-label="Telegram">📢</a>
+        </div>
+      </div>
+      <hr class="decor-line">
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <div id="title-root">
+          <p class="text-muted">Загрузка…</p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="footer-year">2024</span> Blizzard Brotherhood</p>
+      <p class="footer-links">
+        <a href="#" id="footer-telegram">Telegram</a> · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p class="footer-note">All translations are fan-made and non-commercial</p>
+    </footer>
+  </div>
+  <script src="assets/js/app.js"></script>
+  <script>
+    (function() {
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+      var root = document.getElementById('title-root');
+      if (!id) {
+        root.innerHTML = '<p class="text-muted">Укажите id в адресе: title.html?id=title-slug</p>';
+        return;
+      }
+      App.loadLibrary().then(function(data) {
+        if (data && data.site) {
+          var t = document.getElementById('telegram-link');
+          if (t) t.href = data.site.telegram || '#';
+          var ft = document.getElementById('footer-telegram');
+          if (ft) ft.href = data.site.telegram || '#';
+        }
+        var title = (data && data.titles) ? data.titles.find(function(t) { return t.id === id; }) : null;
+        if (!title) {
+          root.innerHTML = '<p class="text-muted">Тайтл не найден.</p>';
+          document.title = 'Blizzard Brotherhood — Не найдено';
+          return;
+        }
+        document.title = (title.titleEn || title.title) + ' — Blizzard Brotherhood';
+        if (title.description) {
+          var desc = document.querySelector('meta[name="description"]');
+          if (desc) desc.content = title.description.substring(0, 160);
+        }
+        App.renderTitlePage(root, title);
+      }).catch(function() {
+        root.innerHTML = '<p class="text-muted">Не удалось загрузить данные.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>
