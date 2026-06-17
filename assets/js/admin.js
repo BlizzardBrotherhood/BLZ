@@ -301,7 +301,7 @@
         title: chapterTitle,
         language: lang,
         type: lang === 'ru' ? 'translation' : 'original',
-        date_published: new Date().toISOString().slice(0, 10),
+        date_published: new Date().toISOString(),
         content: content
       };
       
@@ -382,10 +382,13 @@
         
         var lastDate = null;
         chapters.forEach(function(c) {
-          if (!lastDate || c.date_published > lastDate) {
-            lastDate = c.date_published;
+          var dateStr = c.date_published || '';
+          if (!lastDate || dateStr > lastDate) {
+            lastDate = dateStr;
           }
         });
+        // Для отображения только даты:
+        var displayDate = lastDate ? lastDate.slice(0, 10) : null;
         
         supabase
           .from('titles')

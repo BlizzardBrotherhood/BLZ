@@ -70,12 +70,10 @@
     (function() {
       document.getElementById('footer-year').textContent = new Date().getFullYear();
       
-      // Ждем, пока App станет доступен
       function waitForApp(callback) {
         if (window.App && window.App.loadLibrary) {
           callback();
         } else {
-          console.log('Waiting for App to load...');
           setTimeout(function() { waitForApp(callback); }, 100);
         }
       }
@@ -87,21 +85,54 @@
             if (t) { t.href = data.site.telegram || '#'; }
             var ft = document.getElementById('footer-telegram');
             if (ft) { ft.href = data.site.telegram || '#'; }
-            var last = document.getElementById('hero-last');
-            if (last && data.titles && data.titles.length) {
-              var lastTitle = data.titles[0];
-              var lastCh = lastTitle.chapters && lastTitle.chapters.length
-                ? lastTitle.chapters.slice().sort(function(a,b) { return (b.datePublished || '').localeCompare(a.datePublished || ''); })[0]
-                : null;
-              if (lastCh) {
-                last.textContent = 'Последнее обновление: ' + (lastTitle.title || lastTitle.titleEn) + ' — гл. ' + (lastCh.number || lastCh.id);
-              } else {
-                last.textContent = 'Последнее обновление: ' + (data.site.lastUpdated || '');
+          }
+          
+          var lastEl = document.getElementById('hero-last');
+          if (lastEl && data && data.titles) {
+            var allChapters = [];
+            
+            // Собираем все главы со всех тайтлов
+            data.titles.forEach(function(title) {
+              if (title.chapters && title.chapters.length) {
+                title.chapters.forEach(function(ch) {
+                  allChapters.push({
+                    title: title.title || title.titleEn || 'Unknown',
+                    titleId: title.id,
+                    chapter: ch
+                  });
+                });
               }
+            });
+            
+            if (allChapters.length > 0) {
+              // Сортируем по ID (самые новые главы имеют больший ID)
+              allChapters.sort(function(a, b) {
+                return (b.chapter.id || 0) - (a.chapter.id || 0);
+              });
+              
+              var latest = allChapters[0];
+              var titleName = latest.title;
+              var chapterNum = latest.chapter.number != null ? latest.chapter.number : latest.chapter.id;
+              var pubDate = latest.chapter.datePublished || '';
+
+              // Форматируем дату для отображения
+              function formatDate(dateStr) {
+                if (!dateStr) return '';
+                var date = new Date(dateStr);
+                return date.toLocaleDateString('ru-RU', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                });
+              }
+
+              var displayDate = formatDate(pubDate);
+              lastEl.textContent = 'Последнее обновление: ' + titleName + ' — гл. ' + chapterNum + ' (' + displayDate + ')';
             } else {
-              last.textContent = data.site.lastUpdated ? 'Обновлено: ' + data.site.lastUpdated : '';
+              lastEl.textContent = data.site.lastUpdated ? 'Обновлено: ' + data.site.lastUpdated : '';
             }
           }
+          
           App.renderHome(document.getElementById('titles-grid'), data);
         }).catch(function(error) {
           console.error('Error loading data:', error);
