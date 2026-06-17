@@ -86,12 +86,19 @@
             var ft = document.getElementById('footer-telegram');
             if (ft) { ft.href = data.site.telegram || '#'; }
           }
-          
+
+          if (data && data.titles) {
+            data.titles.sort(function(a, b) {
+              var dateA = a.lastChapterDate || '';
+              var dateB = b.lastChapterDate || '';
+              return dateB.localeCompare(dateA);
+            });
+          }
+
           var lastEl = document.getElementById('hero-last');
           if (lastEl && data && data.titles) {
             var allChapters = [];
             
-            // Собираем все главы со всех тайтлов
             data.titles.forEach(function(title) {
               if (title.chapters && title.chapters.length) {
                 title.chapters.forEach(function(ch) {
@@ -105,7 +112,6 @@
             });
             
             if (allChapters.length > 0) {
-              // Сортируем по ID (самые новые главы имеют больший ID)
               allChapters.sort(function(a, b) {
                 return (b.chapter.id || 0) - (a.chapter.id || 0);
               });
@@ -115,7 +121,6 @@
               var chapterNum = latest.chapter.number != null ? latest.chapter.number : latest.chapter.id;
               var pubDate = latest.chapter.datePublished || '';
 
-              // Форматируем дату для отображения
               function formatDate(dateStr) {
                 if (!dateStr) return '';
                 var date = new Date(dateStr);

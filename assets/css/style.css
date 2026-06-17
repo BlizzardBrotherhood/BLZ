@@ -723,3 +723,11 @@ body.reader-theme-sepia .reader-content-wrap {
 .btn-sort:active {
   transform: scale(0.97);
 }
+
+/* Последнее обновление на карточке */
+.title-card-last-update {
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+  margin: 0.25rem 0 0.5rem;
+  opacity: 0.85;
+}
