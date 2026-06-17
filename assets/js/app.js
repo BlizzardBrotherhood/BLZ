@@ -138,6 +138,40 @@ var App = (function() {
   }
 
   function renderTitlePage(root, title) {
+    // Ключ для localStorage (уникальный для каждого тайтла)
+    var SORT_KEY = 'bb_sort_' + title.id;
+    
+    // Загружаем состояние сортировки из localStorage
+    var sortDescending = false;
+    try {
+      var saved = localStorage.getItem(SORT_KEY);
+      if (saved !== null) {
+        sortDescending = saved === 'true';
+      }
+    } catch (e) {}
+    
+    // Функция для рендеринга списка глав с учетом сортировки
+    function renderChapters(lang) {
+      var chapters = (lang === 'ru') ? byLang.ru : byLang.en;
+      var container = document.getElementById('chapters-' + lang);
+      if (!container) return;
+      
+      // Копируем массив, чтобы не менять оригинал
+      var sorted = chapters.slice();
+      
+      // Сортируем в зависимости от состояния
+      sorted.sort(function(a, b) {
+        var na = a.number != null ? a.number : a.id;
+        var nb = b.number != null ? b.number : b.id;
+        na = Number(na) || 0;
+        nb = Number(nb) || 0;
+        return sortDescending ? nb - na : na - nb;
+      });
+      
+      // Рендерим список
+      container.innerHTML = chapterListHtml(sorted, title.id, lang);
+    }
+    
     var chapters = title.chapters || [];
     var byLang = { ru: [], en: [] };
     chapters.forEach(function(c) {
@@ -175,9 +209,15 @@ var App = (function() {
     html += '<span class="status-badge ' + statusClass(title.status) + '">' + (title.status === 'completed' ? 'Completed' : title.status === 'hiatus' || title.status === 'on hiatus' ? 'On Hiatus' : 'Ongoing') + '</span>';
     html += '</div></div>';
 
-    html += '<div class="lang-tabs" role="tablist">';
-    html += '<button type="button" class="lang-tab active" role="tab" aria-selected="true" data-lang="ru">🇷🇺 Translation</button>';
-    html += '<button type="button" class="lang-tab" role="tab" aria-selected="false" data-lang="en">🇬🇧 Original</button>';
+    // Вкладки языков + кнопка сортировки
+    html += '<div class="lang-tabs-wrapper" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">';
+    html += '<div class="lang-tabs" role="tablist" style="display:flex; gap:0; border-bottom:1px solid var(--color-border); flex-wrap:wrap;">';
+    html += '<button type="button" class="lang-tab active" role="tab" aria-selected="true" data-lang="ru">RU · Перевод</button>';
+    html += '<button type="button" class="lang-tab" role="tab" aria-selected="false" data-lang="en">EN · Оригинал</button>';
+    html += '</div>';
+    
+    // Кнопка сортировки (всегда один текст)
+    html += '<button type="button" id="sort-toggle" class="btn btn-sort" style="font-size:0.8125rem; padding:0.3rem 0.75rem; min-height:32px; border-color:var(--color-border); background:var(--color-bg-elevated); color:var(--color-text-secondary);">↕ Сортировать</button>';
     html += '</div>';
 
     html += '<div id="chapters-ru" class="chapters-pane" role="tabpanel">' + chapterListHtml(byLang.ru, title.id, 'ru') + '</div>';
@@ -185,6 +225,7 @@ var App = (function() {
 
     root.innerHTML = html;
 
+    // Обработчик переключения вкладок
     root.querySelectorAll('.lang-tab').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var lang = this.getAttribute('data-lang');
@@ -194,8 +235,36 @@ var App = (function() {
         });
         document.getElementById('chapters-ru').style.display = lang === 'ru' ? '' : 'none';
         document.getElementById('chapters-en').style.display = lang === 'en' ? '' : 'none';
+        
+        // При переключении вкладки применяем текущую сортировку
+        renderChapters(lang);
       });
     });
+
+    // Обработчик кнопки сортировки
+    var sortBtn = document.getElementById('sort-toggle');
+    if (sortBtn) {
+      sortBtn.addEventListener('click', function() {
+        sortDescending = !sortDescending;
+        
+        // Сохраняем в localStorage
+        try {
+          localStorage.setItem(SORT_KEY, String(sortDescending));
+        } catch (e) {}
+        
+        // Определяем, какая вкладка сейчас активна
+        var activeTab = root.querySelector('.lang-tab.active');
+        var activeLang = activeTab ? activeTab.getAttribute('data-lang') : 'ru';
+        
+        // Перерендериваем только активную вкладку
+        renderChapters(activeLang);
+      });
+    }
+    
+    // После загрузки применяем сохраненную сортировку к активной вкладке
+    var activeTab = root.querySelector('.lang-tab.active');
+    var activeLang = activeTab ? activeTab.getAttribute('data-lang') : 'ru';
+    renderChapters(activeLang);
   }
 
   function chapterListHtml(chapters, titleId, lang) {
@@ -204,12 +273,12 @@ var App = (function() {
     chapters.forEach(function(c) {
       var num = c.number != null ? c.number : c.id;
       var url = getChapterUrl(titleId, num);
-      var icon = lang === 'ru' ? '🇷🇺' : '🇬🇧';
+      var icon = lang === 'ru' ? 'RU' : 'EN';
       var origLabel = (c.type === 'original' || c.language === 'en') ? ' <span class="chapter-original">Original</span>' : '';
       list += '<li><a href="' + url + '" class="chapter-row">';
       list += '<span class="chapter-num">' + escapeHtml(String(num)) + '</span>';
       list += '<span class="chapter-title">' + escapeHtml(c.title || 'Chapter ' + num) + origLabel + '</span>';
-      list += '<span class="chapter-meta"><span class="chapter-lang-icon">' + icon + '</span>' + escapeHtml(c.datePublished || '') + '</span>';
+      list += '<span class="chapter-meta"><span class="chapter-lang-icon" style="font-weight:600;font-size:0.7rem;opacity:0.7;">' + icon + '</span> ' + escapeHtml(c.datePublished || '') + '</span>';
       list += '</a></li>';
     });
     return list + '</ul>';
